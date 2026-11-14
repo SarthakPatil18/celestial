@@ -1,9 +1,10 @@
 .moon-workspace{height:min(75vh,760px);min-height:590px;border:1px solid var(--border-strong);background:#040609}
 .moon-workspace .hero__media{z-index:0;inset:0;filter:none;transform:none;background:#040609}
 .moon-workspace .hero__media::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 52% 48%,transparent 28%,rgba(2,4,7,.15) 69%,rgba(2,4,7,.52) 100%)}
-.moon-workspace .hero__scrim{z-index:1;background:linear-gradient(90deg,rgba(4,6,9,.8),rgba(4,6,9,.12) 32%,transparent 62%,rgba(4,6,9,.18)),linear-gradient(0deg,rgba(4,6,9,.82),transparent 26%,transparent 78%,rgba(4,6,9,.3))}
-.moon-workspace .hero__grid{z-index:2;opacity:.4;mask-image:linear-gradient(180deg,black,transparent 84%)}
-.celestial-moon-canvas{position:absolute!important;inset:0;width:100%!important;height:100%!important;z-index:0}
+.moon-workspace .hero__scrim{z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(4,6,9,.8),rgba(4,6,9,.12) 32%,transparent 62%,rgba(4,6,9,.18)),linear-gradient(0deg,rgba(4,6,9,.82),transparent 26%,transparent 78%,rgba(4,6,9,.3))}
+.moon-workspace .hero__grid{z-index:2;opacity:.4;mask-image:linear-gradient(180deg,black,transparent 84%);pointer-events:none}
+.celestial-moon-canvas{position:absolute!important;inset:0;width:100%!important;height:100%!important;z-index:0;touch-action:none;cursor:grab}
+.celestial-moon-canvas:active{cursor:grabbing}
 .celestial-moon-canvas canvas{display:block}
 .moon-workspace .moon-title{position:absolute;top:25px;left:30px;z-index:4;align-items:flex-start;gap:7px;max-width:370px;pointer-events:none}
 .moon-title .hero__eyebrow{font:9px var(--font-mono);letter-spacing:.12em;color:var(--cyan)}
