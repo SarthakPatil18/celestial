@@ -1,0 +1,61 @@
+.moon-workspace{height:min(75vh,760px);min-height:590px;border:1px solid var(--border-strong);background:#040609}
+.moon-workspace .hero__media{z-index:0;inset:0;filter:none;transform:none;background:#040609}
+.moon-workspace .hero__media::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 52% 48%,transparent 28%,rgba(2,4,7,.15) 69%,rgba(2,4,7,.52) 100%)}
+.moon-workspace .hero__scrim{z-index:1;background:linear-gradient(90deg,rgba(4,6,9,.8),rgba(4,6,9,.12) 32%,transparent 62%,rgba(4,6,9,.18)),linear-gradient(0deg,rgba(4,6,9,.82),transparent 26%,transparent 78%,rgba(4,6,9,.3))}
+.moon-workspace .hero__grid{z-index:2;opacity:.4;mask-image:linear-gradient(180deg,black,transparent 84%)}
+.celestial-moon-canvas{position:absolute!important;inset:0;width:100%!important;height:100%!important;z-index:0}
+.celestial-moon-canvas canvas{display:block}
+.moon-workspace .moon-title{position:absolute;top:25px;left:30px;z-index:4;align-items:flex-start;gap:7px;max-width:370px;pointer-events:none}
+.moon-title .hero__eyebrow{font:9px var(--font-mono);letter-spacing:.12em;color:var(--cyan)}
+.moon-title .hero__title{font-size:clamp(19px,2vw,28px);line-height:1.05;letter-spacing:.015em}
+.moon-title .hero__subtitle{font:8px var(--font-mono);letter-spacing:.1em}
+.moon-title .hero__actions{pointer-events:auto;margin-top:2px;gap:12px}
+.moon-title .hero__actions .btn{height:30px;padding:0 11px;font-size:9px}
+.moon-title .hero__link{font-size:9px}
+.moon-workspace .moon-site{left:24px;right:auto;top:auto;bottom:73px;transform:none;width:247px;z-index:4;padding:11px 12px;gap:7px;background:rgba(7,10,15,.88);border-color:rgba(183,201,216,.18);border-radius:3px}
+.moon-site__select-label{display:flex;flex-direction:column;gap:4px;font:8px var(--font-mono);letter-spacing:.1em;color:var(--text-faint)}
+.moon-site__select{width:100%;padding:2px 22px 5px 0;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);font:600 15px var(--font-display);outline:none}
+.moon-site__select option{background:#10151c;color:#e7e9ec}
+.moon-site .site-acq__name{display:block;font:13px var(--font-display);line-height:1.15;color:var(--text);margin:1px 0 0}
+.moon-site__preview{position:relative;height:52px;overflow:hidden;border:1px solid var(--border-soft);background:#090d12}
+.moon-site__preview img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block;filter:grayscale(.65) brightness(.72)}
+.moon-site__preview span{position:absolute;right:4px;bottom:4px;padding:2px 3px;background:rgba(4,6,9,.78);font:6px var(--font-mono);letter-spacing:.05em;color:var(--text-dim)}
+.moon-site .site-acq__coords{font:8px var(--font-mono);letter-spacing:.06em}
+.moon-site .site-acq__grid{padding:7px 0;border-block:1px solid var(--border-soft)}
+.moon-site .site-acq__label{font-size:7px}
+.moon-site .site-acq__value{font:9px var(--font-mono)}
+.moon-site__buttons{display:flex;justify-content:space-between;gap:6px}
+.moon-site__buttons button{font:8px var(--font-mono);color:var(--cyan);padding:5px 0}
+.moon-site__buttons button:hover{color:#c2f6fa}
+.moon-site .site-acq__foot{font-size:7px;margin-top:0}
+.moon-telemetry{position:absolute;z-index:4;right:24px;top:24px;width:224px;padding:11px 12px;background:rgba(7,10,15,.88);border:1px solid rgba(183,201,216,.18);border-radius:3px;box-shadow:var(--shadow-float);backdrop-filter:blur(12px);font-family:var(--font-mono)}
+.moon-telemetry__section header{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.12em;color:var(--text)}
+.moon-telemetry__section header span{font-size:12px}
+.moon-telemetry__section header b{margin-left:auto;font-size:6px;font-weight:400;color:var(--text-faint);letter-spacing:.06em}
+.moon-telemetry__sun header span,.moon-telemetry__sun strong{color:var(--amber)}
+.moon-telemetry__earth header span,.moon-telemetry__earth strong{color:var(--cyan)}
+.moon-telemetry__section>strong{display:block;margin:6px 0;font-size:22px;line-height:1.1;font-weight:400}
+.moon-telemetry__section>div{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--border-soft)}
+.moon-telemetry__section>div span{font-size:7px;color:var(--text-faint);letter-spacing:.08em}
+.moon-telemetry__section>div b{font-size:8px;font-weight:400;color:var(--text)}
+.moon-telemetry__earth{margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.moon-telemetry>small{display:block;margin-top:9px;font:6px var(--font-mono);letter-spacing:.04em;color:var(--text-faint)}
+.moon-scene-controls{position:absolute;z-index:4;right:24px;top:51%;display:flex;flex-direction:column;align-items:center;padding:4px;border:1px solid rgba(183,201,216,.18);background:rgba(7,10,15,.86);border-radius:3px}
+.moon-scene-controls button{width:27px;height:27px;color:var(--text-dim);font:16px var(--font-mono)}
+.moon-scene-controls button:hover,.moon-scene-controls button.is-on{color:var(--cyan);background:rgba(83,191,207,.09)}
+.moon-scene-controls i{width:15px;border-top:1px solid var(--border);margin:3px 0}
+.moon-timeline{position:absolute;z-index:4;left:292px;right:68px;bottom:22px;padding:9px 12px 8px;background:rgba(7,10,15,.88);border:1px solid rgba(183,201,216,.18);border-radius:3px;backdrop-filter:blur(12px)}
+.moon-timeline__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font:7px var(--font-mono);letter-spacing:.08em;color:var(--text-faint)}
+.moon-timeline__top b{font-weight:400;color:var(--text-dim)}
+.moon-timeline__controls{display:flex;align-items:center;gap:7px}
+.moon-timeline__controls button{width:24px;height:23px;border:1px solid var(--border);color:var(--text-dim);font:13px var(--font-mono)}
+.moon-timeline__controls button:hover{color:var(--cyan);border-color:var(--cyan-line)}
+.moon-timeline__controls .moon-play{color:var(--cyan)}
+.moon-timeline__controls input{flex:1;min-width:70px;accent-color:var(--cyan);height:14px}
+.moon-timeline__controls>span{font:7px var(--font-mono);white-space:nowrap;color:var(--cyan)}
+.moon-marker-tip{padding:6px 8px;background:rgba(7,11,15,.94);border:1px solid rgba(99,213,232,.28);font-family:var(--font-mono);white-space:nowrap}
+.moon-marker-tip b{display:block;font:9px var(--font-display);color:var(--text)}
+.moon-marker-tip span{display:block;margin-top:3px;font-size:7px;color:var(--cyan)}
+@media(max-width:1000px){.moon-workspace{height:680px}.moon-workspace .moon-site{bottom:74px;width:220px}.moon-telemetry{width:195px;right:14px;top:14px}.moon-scene-controls{right:14px}.moon-timeline{left:250px;right:55px}.moon-title{left:20px!important}}
+@media(max-width:700px){.moon-workspace{height:78vh;min-height:710px;align-items:flex-start}.moon-workspace .moon-title{top:15px;left:15px!important;max-width:54%}.moon-title .hero__actions .btn{height:27px}.moon-workspace .moon-site{left:12px;bottom:117px;width:min(55%,230px);padding:8px 9px}.moon-telemetry{top:auto;bottom:117px;right:12px;width:min(40%,190px);padding:8px}.moon-telemetry__section>strong{font-size:17px}.moon-telemetry__section>div{gap:5px}.moon-telemetry__section>div span{font-size:6px}.moon-telemetry__section header b{font-size:5px}.moon-telemetry>small{font-size:5px}.moon-scene-controls{top:47%;right:12px}.moon-timeline{left:12px;right:12px;bottom:12px}.moon-timeline__top{font-size:6px}.moon-workspace .hero__meta{display:none}}
+@media(max-width:390px){.moon-workspace{min-height:750px}.moon-site__buttons button{font-size:7px}.moon-telemetry{width:38%;}.moon-site{width:56%!important}}

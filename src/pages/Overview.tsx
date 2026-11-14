@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMission } from "../context/MissionContext";
 import { Disclaimer, SectionHead } from "../components/layout/PageIntro";
 import { Badge, DataRow, Legend, Panel, PanelBody, PanelHead } from "../components/ui/Panel";
@@ -12,6 +12,8 @@ import {
 import { Icon } from "../components/ui/Icon";
 import { HorizonView } from "../components/viz/HorizonView";
 import { PolarSolarProfile, SunAngleSpark } from "../components/viz/Charts";
+import { MoonGlobe } from "../components/MoonGlobe";
+import { SITES } from "../data/sites";
 import {
   azimuthLabel,
   degreeLabel,
@@ -31,33 +33,45 @@ export function OverviewPage() {
     navigate,
     dateLabel,
     durationDays,
+    siteId,
+    setSiteId,
   } = useMission();
   const [tracked, setTracked] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [relief, setRelief] = useState(true);
+  const [illumination, setIllumination] = useState(true);
+  const [showEarth, setShowEarth] = useState(true);
+  const [cameraCommand, setCameraCommand] = useState<{ mode: "focus" | "reset"; id: number } | null>(null);
+  const focusSite = () => setCameraCommand({ mode: "focus", id: Date.now() });
+
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setInterval(() => setLocalTime((localTime + 0.12) % 24), 1000);
+    return () => window.clearInterval(timer);
+  }, [playing, localTime, setLocalTime]);
 
   return (
     <div className="page page--overview">
-      <section className="hero" aria-labelledby="hero-title">
-        <div className="hero__media" aria-hidden="true" />
+      <section className="hero moon-workspace" aria-labelledby="hero-title">
+        <div className="hero__media"><MoonGlobe site={site} sunElev={sun.elev} sunAz={sun.az} earthElev={earth.elev} earthAz={earth.az} relief={relief} illumination={illumination} showEarth={showEarth} cameraCommand={cameraCommand} onSelect={id => { setSiteId(id); setCameraCommand({ mode: "focus", id: Date.now() }); }} /></div>
         <div className="hero__scrim" aria-hidden="true" />
         <div className="hero__grid" aria-hidden="true" />
 
-        <div className="hero__content">
+        <div className="hero__content moon-title">
           <p className="hero__eyebrow">
             <span className="hero__eyebrow-line" aria-hidden="true" />
-            ARTEMIS EXPLORATION • PHASE II
+            LUNAR NAVIGATION / SOUTH POLAR REGION
           </p>
           <h1 id="hero-title" className="hero__title">
-            LUNAR
-            <br />
-            HORIZON
+            LUNAR HORIZON
           </h1>
-          <p className="hero__subtitle">Lunar South Pole Mission Intelligence</p>
+          <p className="hero__subtitle">Live surface view · geometric preview</p>
           <div className="hero__actions">
             <ActionButton
               variant="primary"
               onClick={() => document.getElementById("overview-dashboard")?.scrollIntoView({ behavior: "smooth" })}
             >
-              Explore Mission Dashboard
+              Mission dashboard
             </ActionButton>
             <button
               type="button"
@@ -69,34 +83,41 @@ export function OverviewPage() {
           </div>
         </div>
 
-        <aside className="site-acq" aria-label="Site acquisition">
+        <aside className="site-acq moon-site" aria-label="Selected landing site">
           <div className="site-acq__head">
-            <span className="site-acq__title">SITE ACQUISITION</span>
+            <span className="site-acq__title">LANDING SITE</span>
             <span className="site-acq__pulse" aria-hidden="true" />
           </div>
+          <label className="moon-site__select-label">CANDIDATE REGION<select className="moon-site__select" value={siteId} onChange={e => { setSiteId(e.target.value); setCameraCommand({ mode: "focus", id: Date.now() }); }}>{SITES.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+          <div className="moon-site__preview"><img src="/south-pole-mosaic.jpg" alt="Lunar south pole surface map" /><span>{site.region.toUpperCase()} / {site.dataQuality.toUpperCase()}</span></div>
           <p className="site-acq__name">{site.name}</p>
           <p className="site-acq__coords">
-            {Math.abs(site.lat).toFixed(2)}° S / {site.lon.toFixed(2)}° E
+            {Math.abs(site.lat).toFixed(2)}° S / {((site.lon % 360 + 360) % 360).toFixed(2)}° E
           </p>
           <div className="site-acq__grid">
             <div>
-              <span className="site-acq__label">SOLAR ELEVATION</span>
-              <span className={`site-acq__value ${sun.elev < 0 ? "is-dim" : ""}`}>
-                {degreeLabel(sun.elev)}
-              </span>
+              <span className="site-acq__label">LOCAL ELEVATION</span><span className="site-acq__value">+{site.elevation.toLocaleString()} m</span>
             </div>
             <div>
-              <span className="site-acq__label">EARTH VISIBLE</span>
-              <span className={`site-acq__value ${earth.elev > 0 ? "is-cyan" : "is-dim"}`}>
-                {earth.elev > 0 ? "YES" : "NO"}
-              </span>
+              <span className="site-acq__label">TERRAIN</span><span className="site-acq__value">{site.category.toUpperCase()}</span>
             </div>
           </div>
+          <div className="moon-site__buttons"><button type="button" onClick={()=>navigate("mission-comparison")}>Compare sites ↗</button><button type="button" onClick={focusSite}>Focus region ⌖</button></div>
           <div className="site-acq__foot">
             <span>{hoursToLabel(localTime)} LST</span>
             <span>{dateLabel}</span>
           </div>
         </aside>
+
+        <aside className="moon-telemetry" aria-label="Live Sun and Earth telemetry">
+          <div className="moon-telemetry__section moon-telemetry__sun"><header><span>☼</span>SUN <b>{sun.elev > 0 ? "ABOVE HORIZON" : "BELOW HORIZON"}</b></header><strong>{degreeLabel(sun.elev)}</strong><div><span>AZIMUTH</span><b>{azimuthLabel(sun.az)}</b></div><div><span>SOLAR AVAILABILITY / 24H</span><b>{percentLabel(analysis.geometricSunFraction)}</b></div></div>
+          <div className="moon-telemetry__section moon-telemetry__earth"><header><span>◉</span>EARTH <b>{earth.elev > 0 ? "VISIBLE" : "BELOW HORIZON"}</b></header><strong>{degreeLabel(earth.elev)}</strong><div><span>AZIMUTH</span><b>{azimuthLabel(earth.az)}</b></div><div><span>GEOMETRIC LINK / 24H</span><b>{percentLabel(analysis.earthVisibleFraction)}</b></div></div>
+          <small>ILLUSTRATIVE SPHERICAL MODEL · NOT FLIGHT DATA</small>
+        </aside>
+
+        <div className="moon-scene-controls" aria-label="Moon view controls"><button type="button" onClick={focusSite} title="Focus selected landing site">◎</button><button type="button" onClick={()=>setCameraCommand({mode:"reset",id:Date.now()})} title="Reset camera">⟲</button><i/><button type="button" className={relief?"is-on":""} onClick={()=>setRelief(x=>!x)} title="Toggle terrain relief">⌗</button><button type="button" className={illumination?"is-on":""} onClick={()=>setIllumination(x=>!x)} title="Toggle illumination">☼</button><button type="button" className={showEarth?"is-on":""} onClick={()=>setShowEarth(x=>!x)} title="Toggle Earth visualization">◉</button><button type="button" onClick={()=>document.fullscreenElement?document.exitFullscreen?.():document.documentElement.requestFullscreen?.()} title="Fullscreen">⛶</button></div>
+
+        <div className="moon-timeline"><div className="moon-timeline__top"><span>MISSION TIMELINE</span><b>{dateLabel} · {hoursToLabel(localTime)} LST</b><span>{durationDays} DAY WINDOW</span></div><div className="moon-timeline__controls"><button type="button" onClick={()=>setLocalTime((localTime+23.75)%24)} title="Step backward 15 minutes">‹</button><button type="button" className="moon-play" onClick={()=>setPlaying(x=>!x)} title={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button><button type="button" onClick={()=>setLocalTime((localTime+.25)%24)} title="Step forward 15 minutes">›</button><input aria-label="Mission local time" type="range" min="0" max="23.99" step=".01" value={localTime} onChange={e=>setLocalTime(Number(e.target.value))}/><span>{hoursToLabel(localTime)} LST</span></div></div>
 
         <div className="hero__meta">
           <span>
@@ -300,7 +321,6 @@ export function OverviewPage() {
     </div>
   );
 }
-
 function MetricCard({
   label,
   value,

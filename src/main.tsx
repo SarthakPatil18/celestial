@@ -9,6 +9,7 @@ import "./styles/viz.css";
 import "./styles/pages.css";
 import "./styles/pages-2.css";
 import "./styles/theme.css";
+import "./styles/moon-workspace.css";
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");

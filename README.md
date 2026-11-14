@@ -12,6 +12,7 @@ Celestial (Lunar Horizon) is an interactive mission intelligence and trajectory 
 ## Key Features
 
 - **Mission Overview Dashboard**: High-level telemetry, mission objectives, site readiness, and environmental profiles.
+- **Interactive lunar workspace**: A Three.js Moon with draggable rotation, zoom, landing-site markers, modeled sunlight, and mission-time telemetry on the Overview.
 - **Candidate Landing Sites**: Detailed breakdowns of candidate polar landing sites (e.g., Shackleton Connecting Ridge, Malapert Mountain, Faustini Rim, Haworth) with slope, roughness, and illumination metrics.
 - **Horizon & Terrain Simulator**: Real-time 360° terrain elevation profile modeling, solar and Earth vector projections against local topographical obstacles.
 - **Solar Illumination Analysis**: Long-term lighting cycle projections, peak sunlight and eclipse duration forecasts, and power availability simulations.
@@ -23,10 +24,14 @@ Celestial (Lunar Horizon) is an interactive mission intelligence and trajectory 
 - **Framework**: [React 19](https://react.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Build Tool**: [Vite](https://vite.dev/)
-- **Visualizations**: Interactive HTML5 Canvas & SVG renderings
+- **Visualizations**: Three.js / React Three Fiber, interactive HTML5 Canvas & SVG renderings
 - **Styling**: Modern CSS design system with custom space-mission tokens and dark mode support
 
 ## Getting Started
+
+The project currently has no backend or API. Mission sites and the time-dependent Sun/Earth values are provided by the illustrative client-side model in `src/data/sites.ts` and `src/lib/mission.ts`; the Moon workspace uses that same shared mission state.
+
+The Overview's Moon albedo and terrain maps are local NASA LRO/LOLA-derived assets, and Earth uses NASA's Blue Marble map. The 3D Sun/Earth geometry is a visualization of the existing local model, not operational ephemeris or communications data. Sources: [NASA CGI Moon Kit](https://svs.gsfc.nasa.gov/4720/) and [NASA Blue Marble](https://svs.gsfc.nasa.gov/2915/).
 
 ### Prerequisites
 
