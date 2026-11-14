@@ -1,0 +1,538 @@
+/* ==========================================================================
+   Light theme refinements
+   The palette comes from DESIGN.md; these rules only adapt components that
+   need different treatment from the dark mission-control surfaces.
+   ========================================================================== */
+
+[data-theme="light"] {
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-panel: 0 1px 2px rgba(9, 9, 11, 0.04);
+  --shadow-float: 0 30px 70px -34px rgba(9, 9, 11, 0.4);
+}
+
+[data-theme="light"] .panel {
+  background: #ffffff;
+  border-color: #e4e4e7;
+}
+
+[data-theme="light"] .panel-head {
+  background: #ffffff;
+}
+
+[data-theme="light"] .panel-foot {
+  background: #f4f4f5;
+}
+
+[data-theme="light"] .telemetry,
+[data-theme="light"] .dsn,
+[data-theme="light"] .disclaimer,
+[data-theme="light"] .quality,
+[data-theme="light"] .harvest,
+[data-theme="light"] .limits-foot,
+[data-theme="light"] .comm-status {
+  background: #f4f4f5;
+  border-color: #e4e4e7;
+}
+
+[data-theme="light"] .field__shell,
+[data-theme="light"] .seg,
+[data-theme="light"] .theme-toggle,
+[data-theme="light"] .badge {
+  background: #ffffff;
+  border-color: #e4e4e7;
+}
+
+[data-theme="light"] .field__shell:hover,
+[data-theme="light"] .field__shell:focus-within {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+[data-theme="light"] .nav__item {
+  color: #6b6b74;
+  border-radius: 12px;
+  border-color: transparent;
+}
+
+[data-theme="light"] .nav__item:hover {
+  color: #09090b;
+  background: #f4f4f5;
+}
+
+[data-theme="light"] .nav__item.is-active {
+  background: #09090b;
+  border-color: #09090b;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+[data-theme="light"] .nav__item.is-active .nav__text,
+[data-theme="light"] .nav__item.is-active .nav__icon,
+[data-theme="light"] .nav__item.is-active .nav__index {
+  color: #ffffff;
+}
+
+[data-theme="light"] .nav__item::after {
+  display: none;
+}
+
+[data-theme="light"] .brand__mark,
+[data-theme="light"] .brand__slash {
+  color: #09090b;
+}
+
+[data-theme="light"] .status__dot {
+  background: #09090b;
+  box-shadow: 0 0 0 2px rgba(9, 9, 11, 0.08);
+}
+
+[data-theme="light"] .btn {
+  background: #ffffff;
+  border-color: #e4e4e7;
+  color: #09090b;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+}
+
+[data-theme="light"] .btn:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+[data-theme="light"] .btn--primary {
+  background: #09090b;
+  border-color: #09090b;
+  color: #ffffff;
+}
+
+[data-theme="light"] .btn--primary:hover {
+  background: #27272a;
+  border-color: #27272a;
+}
+
+[data-theme="light"] .btn--ghost {
+  background: transparent;
+}
+
+[data-theme="light"] .btn.is-active {
+  background: #09090b;
+  border-color: #09090b;
+  color: #ffffff;
+}
+
+[data-theme="light"] .seg {
+  border-radius: 999px;
+  padding: 2px;
+}
+
+[data-theme="light"] .seg__btn {
+  border-right: 0;
+  border-radius: 999px;
+  padding: 0 11px;
+}
+
+[data-theme="light"] .seg__btn.is-active {
+  background: #09090b;
+  color: #ffffff;
+}
+
+[data-theme="light"] .theme-toggle {
+  border-radius: 999px;
+}
+
+[data-theme="light"] .metric,
+[data-theme="light"] .stat,
+[data-theme="light"] .feature,
+[data-theme="light"] .compare-site {
+  background: #ffffff;
+  border-color: #e4e4e7;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(9, 9, 11, 0.04);
+}
+
+[data-theme="light"] .metric::before {
+  width: 0;
+}
+
+[data-theme="light"] .metric__value,
+[data-theme="light"] .stat__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .metric__meter,
+[data-theme="light"] .stat__meter {
+  color: #09090b;
+  background: #e4e4e7;
+}
+
+[data-theme="light"] .stat {
+  border-top-width: 1px;
+  border-top-color: #e4e4e7;
+}
+
+[data-theme="light"] .stat--amber,
+[data-theme="light"] .stat--cyan,
+[data-theme="light"] .stat--purple {
+  border-top-color: #e4e4e7;
+}
+
+[data-theme="light"] .stat__dot--amber,
+[data-theme="light"] .stat__dot--cyan,
+[data-theme="light"] .stat__dot--purple {
+  background: #09090b;
+}
+
+[data-theme="light"] .stat__value-row--split .stat__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .metric--amber .metric__value,
+[data-theme="light"] .metric--cyan .metric__value,
+[data-theme="light"] .metric--purple .metric__value,
+[data-theme="light"] .stat--amber .stat__value,
+[data-theme="light"] .stat--cyan .stat__value,
+[data-theme="light"] .stat--purple .stat__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .feature {
+  border-radius: 16px;
+}
+
+[data-theme="light"] .feature:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+[data-theme="light"] .feature__action {
+  color: #09090b;
+}
+
+[data-theme="light"] .badge {
+  border-radius: 999px;
+  color: #6b6b74;
+}
+
+[data-theme="light"] .badge--cyan,
+[data-theme="light"] .badge--amber,
+[data-theme="light"] .badge--purple,
+[data-theme="light"] .badge--green {
+  color: #09090b;
+  border-color: #e4e4e7;
+  background: #f4f4f5;
+}
+
+[data-theme="light"] .badge--cyan .badge__dot,
+[data-theme="light"] .badge--amber .badge__dot,
+[data-theme="light"] .badge--purple .badge__dot {
+  background: #09090b;
+}
+
+[data-theme="light"] .disclaimer__badge {
+  color: #09090b;
+  border-color: #e4e4e7;
+  background: #ffffff;
+  border-radius: 999px;
+}
+
+[data-theme="light"] .scientific-note {
+  background: #f4f4f5;
+  border-color: #e4e4e7;
+  border-left-color: #09090b;
+  border-radius: 8px;
+}
+
+[data-theme="light"] .hero {
+  background: #dcdcd8;
+}
+
+[data-theme="light"] .hero__media {
+  filter: grayscale(1) contrast(1.05) brightness(1.45);
+  opacity: 0.42;
+}
+
+[data-theme="light"] .hero__scrim {
+  background: linear-gradient(
+      90deg,
+      #ececea 0%,
+      rgba(236, 236, 234, 0.9) 44%,
+      rgba(236, 236, 234, 0.35) 100%
+    ),
+    linear-gradient(180deg, rgba(236, 236, 234, 0.9) 0%, rgba(236, 236, 234, 0.2) 55%, #ececea 100%);
+}
+
+[data-theme="light"] .hero__grid {
+  background-image: linear-gradient(rgba(9, 9, 11, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9, 9, 11, 0.05) 1px, transparent 1px);
+}
+
+[data-theme="light"] .hero__eyebrow,
+[data-theme="light"] .hero__eyebrow-line {
+  color: #09090b;
+  background-color: #09090b;
+}
+
+[data-theme="light"] .hero__eyebrow {
+  background: none;
+}
+
+[data-theme="light"] .site-acq {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #e4e4e7;
+  border-radius: 12px;
+}
+
+[data-theme="light"] .site-acq__title {
+  color: #09090b;
+}
+
+[data-theme="light"] .site-acq__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .site-acq__pulse {
+  background: #09090b;
+  box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.08);
+}
+
+[data-theme="light"] .site-acq::before,
+[data-theme="light"] .site-acq::after {
+  border-color: #09090b;
+}
+
+[data-theme="light"] .site-acq__value.is-dim {
+  color: #6b6b74;
+}
+
+[data-theme="light"] .atlas__basemap {
+  filter: grayscale(1) contrast(1) brightness(1.08);
+  opacity: 0.9;
+}
+
+[data-theme="light"] .atlas__vignette {
+  background: radial-gradient(ellipse at center, transparent 42%, rgba(236, 236, 234, 0.9) 130%);
+}
+
+[data-theme="light"] .atlas-marker__label {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+[data-theme="light"] .atlas-marker.is-active .atlas-marker__name {
+  color: #09090b;
+}
+
+[data-theme="light"] .atlas-marker.is-active .atlas-marker__ring {
+  border-color: #09090b;
+  box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.12);
+}
+
+[data-theme="light"] .atlas-marker.is-active .atlas-marker__dot {
+  background: #09090b;
+}
+
+[data-theme="light"] .atlas__coordinate--n,
+[data-theme="light"] .atlas__coordinate--s,
+[data-theme="light"] .atlas__coordinate--w,
+[data-theme="light"] .atlas__coordinate--e {
+  color: #09090b;
+  opacity: 0.55;
+}
+
+[data-theme="light"] .catalog__item.is-active {
+  background: #09090b;
+  color: #ffffff;
+  box-shadow: none;
+  border-radius: 10px;
+}
+
+[data-theme="light"] .catalog__item.is-active .catalog__coord {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme="light"] .quality__grade {
+  color: #09090b;
+}
+
+[data-theme="light"] .quality__bar span {
+  background: #09090b;
+}
+
+[data-theme="light"] .comm-status.is-visible {
+  background: #f4f4f5;
+  border-color: #09090b;
+}
+
+[data-theme="light"] .comm-status.is-visible::after {
+  background: #09090b;
+  box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.1);
+}
+
+[data-theme="light"] .comm-status.is-visible .comm-status__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .link-banner.is-visible {
+  background: #f4f4f5;
+  border-color: #09090b;
+}
+
+[data-theme="light"] .range input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    90deg,
+    #09090b 0%,
+    #09090b var(--range-progress, 50%),
+    #e4e4e7 var(--range-progress, 50%),
+    #e4e4e7 100%
+  );
+}
+
+[data-theme="light"] .range input[type="range"]::-webkit-slider-thumb {
+  background: #09090b;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #09090b;
+}
+
+[data-theme="light"] .range input[type="range"]::-moz-range-thumb {
+  background: #09090b;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #09090b;
+}
+
+[data-theme="light"] .range input[type="range"]::-moz-range-progress {
+  background: #09090b;
+}
+
+/* Monochrome data encoding for the light system --------------------------- */
+
+[data-theme="light"] .hv-sun__disc {
+  fill: #09090b;
+  filter: none;
+}
+
+[data-theme="light"] .hv-earth__disc {
+  fill: #6b6b74;
+  filter: none;
+}
+
+[data-theme="light"] .compass__marker--sun {
+  fill: #09090b;
+}
+[data-theme="light"] .compass__marker--earth {
+  fill: #6b6b74;
+}
+[data-theme="light"] .compass__ray--sun {
+  stroke: #09090b;
+}
+[data-theme="light"] .compass__ray--earth {
+  stroke: #6b6b74;
+}
+[data-theme="light"] .compass__tick--major {
+  stroke: #09090b;
+}
+
+[data-theme="light"] .chart-line--sun {
+  filter: none;
+}
+
+[data-theme="light"] .timeline__interval {
+  fill: #09090b;
+  opacity: 0.72;
+}
+
+[data-theme="light"] .chart-highlight {
+  fill: rgba(9, 9, 11, 0.05);
+}
+
+[data-theme="light"] .chart-dot--sun,
+[data-theme="light"] .chart-dot--earth,
+[data-theme="light"] .chart-dot--field {
+  stroke: #ffffff;
+}
+
+[data-theme="light"] .bar-row__fill--geometric {
+  background: #d4d4d8;
+}
+
+[data-theme="light"] .bar-row__fill--terrain {
+  background: #09090b;
+}
+
+[data-theme="light"] .compare-site__letter {
+  background: #f4f4f5;
+  border-color: #e4e4e7;
+  color: #09090b;
+}
+
+[data-theme="light"] .compare-site--sun .compare-site__letter,
+[data-theme="light"] .compare-site--earth .compare-site__letter,
+[data-theme="light"] .compare-site--field .compare-site__letter {
+  color: #09090b;
+  border-color: #e4e4e7;
+}
+
+[data-theme="light"] .tradeoffs-list strong,
+[data-theme="light"] .harvest__grid strong,
+[data-theme="light"] .comm-stats strong {
+  color: #09090b;
+}
+
+[data-theme="light"] .harvest__value {
+  color: #09090b;
+}
+
+[data-theme="light"] .harvest__big {
+  border-color: #e4e4e7;
+}
+
+[data-theme="light"] .eg-los--visible {
+  stroke: #09090b;
+}
+
+[data-theme="light"] .eg-occluder {
+  stroke: #6b6b74;
+}
+
+[data-theme="light"] .chart-chip {
+  fill: #ffffff;
+  stroke: #e4e4e7;
+}
+
+[data-theme="light"] .hv-chip {
+  fill: rgba(255, 255, 255, 0.92);
+  stroke: #e4e4e7;
+}
+
+[data-theme="light"] .eg-chip {
+  fill: rgba(255, 255, 255, 0.92);
+  stroke: #e4e4e7;
+}
+
+[data-theme="light"] .topbar {
+  background: rgba(236, 236, 234, 0.86);
+}
+
+[data-theme="light"] .sidebar {
+  box-shadow: 1px 0 0 #e4e4e7;
+}
+
+[data-theme="light"] .telemetry__meter span,
+[data-theme="light"] .dsn__bars span {
+  background: #09090b;
+}
+
+[data-theme="light"] .hero__title,
+[data-theme="light"] .page-title,
+[data-theme="light"] .section-title,
+[data-theme="light"] .zone-name,
+[data-theme="light"] .mission-site__name,
+[data-theme="light"] .compare-title {
+  color: #09090b;
+}
+
+[data-theme="light"] .site-acq__name,
+[data-theme="light"] .feature__title {
+  color: #09090b;
+}

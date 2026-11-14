@@ -1,0 +1,193 @@
+/* ==========================================================================
+   LUNAR / HORIZON — design tokens
+   Dark theme  : measured from the reference mission-control screenshots.
+   Light theme : strictly derived from DESIGN.md (Bharpai light system).
+   ========================================================================== */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Canvas */
+  --bg: #030509;
+  --bg-deep: #020408;
+  --sidebar: #05080f;
+  --surface: #06080e;
+  --surface-2: #080c14;
+  --surface-3: #0a0f18;
+  --surface-hover: #0e1b27;
+  --surface-active: #0e1b27;
+  --overlay: rgba(3, 5, 9, 0.72);
+
+  /* Lines */
+  --border: #1e252f;
+  --border-soft: #161c25;
+  --border-strong: #2a3644;
+  --grid: rgba(134, 205, 242, 0.07);
+  --grid-strong: rgba(134, 205, 242, 0.16);
+
+  /* Type */
+  --text: #e7ecf3;
+  --text-dim: #8391a3;
+  --text-faint: #5b6675;
+  --text-inverse: #05080f;
+
+  /* Accents */
+  --cyan: #86cdf2;
+  --cyan-soft: rgba(134, 205, 242, 0.14);
+  --cyan-line: rgba(134, 205, 242, 0.38);
+  --blue: #3273f6;
+  --blue-soft: rgba(50, 115, 246, 0.16);
+  --amber: #e9bc67;
+  --amber-soft: rgba(233, 188, 103, 0.14);
+  --purple: #a8a0e0;
+  --purple-soft: rgba(168, 160, 224, 0.14);
+  --green: #7fd6b0;
+  --green-soft: rgba(127, 214, 176, 0.14);
+  --danger: #e58b7d;
+
+  /* Charts */
+  --chart-sun: #e9bc67;
+  --chart-earth: #86cdf2;
+  --chart-field: #a8a0e0;
+  --chart-zero: rgba(231, 236, 243, 0.35);
+  --chart-grid: rgba(231, 236, 243, 0.08);
+  --chart-fill: rgba(233, 188, 103, 0.12);
+
+  /* Terrain */
+  --terrain-0: #04070c;
+  --terrain-1: #0b1119;
+  --terrain-2: #151d27;
+  --terrain-3: #212c38;
+  --terrain-4: #33404e;
+  --terrain-5: #4a5866;
+  --sky-top: #04070d;
+  --sky-mid: #071019;
+  --sky-horizon: #0d1b26;
+
+  /* Typography */
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Geometry */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-panel: none;
+  --shadow-float: 0 24px 60px -28px rgba(0, 0, 0, 0.9);
+  --shadow-glow-cyan: 0 0 24px rgba(134, 205, 242, 0.22);
+  --shadow-glow-amber: 0 0 26px rgba(233, 188, 103, 0.28);
+
+  /* Motion */
+  --dur-fast: 0.15s;
+  --dur: 0.2s;
+  --dur-slow: 0.3s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Layout */
+  --sidebar-w: 232px;
+  --header-h: 63px;
+  --content-max: 1136px;
+  --page-pad-x: 40px;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Canvas — DESIGN.md: app #ECECEA, surface #FFFFFF, card #DCDCD8, tint #F4F4F5 */
+  --bg: #ececea;
+  --bg-deep: #e4e4e1;
+  --sidebar: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #f4f4f5;
+  --surface-hover: #f4f4f5;
+  --surface-active: #f4f4f5;
+  --overlay: rgba(9, 9, 11, 0.45);
+
+  /* Lines — #E4E4E7 */
+  --border: #e4e4e7;
+  --border-soft: #ececea;
+  --border-strong: #d4d4d8;
+  --grid: rgba(9, 9, 11, 0.06);
+  --grid-strong: rgba(9, 9, 11, 0.12);
+
+  /* Type — ink #09090B, muted #6B6B74 */
+  --text: #09090b;
+  --text-dim: #6b6b74;
+  --text-faint: #8b8b93;
+  --text-inverse: #ffffff;
+
+  /* Accents — the light system is monochrome; ink carries selection. */
+  --cyan: #09090b;
+  --cyan-soft: #f4f4f5;
+  --cyan-line: rgba(9, 9, 11, 0.24);
+  --blue: #27272a;
+  --blue-soft: #f4f4f5;
+  --amber: #09090b;
+  --amber-soft: #f4f4f5;
+  --purple: #6b6b74;
+  --purple-soft: #f4f4f5;
+  --green: #09090b;
+  --green-soft: #f4f4f5;
+  --danger: #6b6b74;
+
+  /* Charts — DESIGN.md chart ramp: #09090B, #3F3F46, #6B6B74, #A1A1AA, #D4D4D8 */
+  --chart-sun: #09090b;
+  --chart-earth: #6b6b74;
+  --chart-field: #a1a1aa;
+  --chart-zero: rgba(9, 9, 11, 0.45);
+  --chart-grid: rgba(9, 9, 11, 0.08);
+  --chart-fill: rgba(9, 9, 11, 0.06);
+
+  /* Terrain — light-compatible greyscale relief */
+  --terrain-0: #f4f4f5;
+  --terrain-1: #ececea;
+  --terrain-2: #e0e0dd;
+  --terrain-3: #d2d2ce;
+  --terrain-4: #b8b8b3;
+  --terrain-5: #9a9a94;
+  --sky-top: #ffffff;
+  --sky-mid: #f4f4f5;
+  --sky-horizon: #e2e2df;
+
+  /* Typography — DESIGN.md families */
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* Geometry — 12px is the dominant radius in DESIGN.md */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
+  --radius-pill: 999px;
+
+  /* Elevation — soft ink-tinted shadows from DESIGN.md */
+  --shadow-panel: 0 1px 2px rgba(9, 9, 11, 0.04);
+  --shadow-float: 0 40px 80px -40px rgba(9, 9, 11, 0.45);
+  --shadow-glow-cyan: 0 8px 24px -14px rgba(9, 9, 11, 0.35);
+  --shadow-glow-amber: 0 8px 24px -14px rgba(9, 9, 11, 0.35);
+
+  --dur-fast: 0.15s;
+  --dur: 0.2s;
+  --dur-slow: 0.3s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --sidebar-w: 232px;
+  --header-h: 63px;
+  --content-max: 1136px;
+  --page-pad-x: 40px;
+}
