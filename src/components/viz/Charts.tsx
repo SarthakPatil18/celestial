@@ -213,12 +213,12 @@ export function PolarSolarProfile({
           );
         })}
         {primarySample && (
-          <g transform={`translate(${Math.min(W - PAD.right - 96, Math.max(PAD.left, scaleX(localTime) - 48))}, ${PAD.top + 2})`}>
-            <rect width="96" height="30" rx="4" className="chart-chip" />
-            <text x="8" y="12" className="chart-chip__label">
+          <g transform={`translate(${Math.min(W - PAD.right - 104, Math.max(PAD.left, scaleX(localTime) - 52))}, ${PAD.top + 2})`}>
+            <rect width="104" height="34" rx="4" className="chart-chip" />
+            <text x="9" y="13" className="chart-chip__label">
               {hoursToLabel(localTime)} LST
             </text>
-            <text x="8" y="24" className="chart-chip__value">
+            <text x="9" y="27" className="chart-chip__value">
               {primarySample.elev >= 0 ? "+" : "−"}
               {Math.abs(primarySample.elev).toFixed(1)}°
             </text>

@@ -196,12 +196,12 @@ export function HorizonView({
       <g className="hv-sun">
         <circle cx={sunX} cy={sunY} r={62} fill="url(#sun-glow)" opacity={sunElev > -8 ? 1 : 0.55} />
         <circle cx={sunX} cy={sunY} r={9} className="hv-sun__disc" />
-        <g transform={`translate(${Math.min(VB_W - 150, Math.max(6, sunX + 16))}, ${Math.max(18, sunY - 16)})`}>
-          <rect width="136" height="38" rx="4" className="hv-chip hv-chip--sun" />
-          <text x="9" y="14" className="hv-chip__title">
+        <g transform={`translate(${Math.min(VB_W - 160, Math.max(6, sunX + 16))}, ${Math.max(18, sunY - 16)})`}>
+          <rect width="144" height="40" rx="4" className="hv-chip hv-chip--sun" />
+          <text x="10" y="15" className="hv-chip__title">
             SUN
           </text>
-          <text x="9" y="28" className="hv-chip__value">
+          <text x="10" y="30" className="hv-chip__value">
             {degreeLabel(sunElev)} / AZ {azimuthLabel(sunAz)}
           </text>
         </g>
@@ -210,12 +210,12 @@ export function HorizonView({
       <g className="hv-earth">
         <circle cx={earthX} cy={earthY} r={40} fill="url(#earth-glow)" />
         <circle cx={earthX} cy={earthY} r={6.5} className="hv-earth__disc" />
-        <g transform={`translate(${Math.min(VB_W - 150, Math.max(6, earthX + 14))}, ${Math.max(18, earthY - 16)})`}>
-          <rect width="150" height="38" rx="4" className="hv-chip hv-chip--earth" />
-          <text x="9" y="14" className="hv-chip__title">
+        <g transform={`translate(${Math.min(VB_W - 170, Math.max(6, earthX + 14))}, ${Math.max(18, earthY - 16)})`}>
+          <rect width="158" height="40" rx="4" className="hv-chip hv-chip--earth" />
+          <text x="10" y="15" className="hv-chip__title">
             EARTH
           </text>
-          <text x="9" y="28" className="hv-chip__value">
+          <text x="10" y="30" className="hv-chip__value">
             {degreeLabel(earthElev)} / AZ {azimuthLabel(earthAz)}
           </text>
         </g>

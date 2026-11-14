@@ -20,7 +20,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -165,9 +165,9 @@ svg {
 .limits-list,
 .subtle {
   font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1.4;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
@@ -182,8 +182,8 @@ svg {
   padding: 10px 16px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .skip-link:focus {

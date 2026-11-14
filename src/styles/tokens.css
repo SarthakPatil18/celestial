@@ -93,8 +93,8 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Layout */
-  --sidebar-w: 232px;
-  --header-h: 63px;
+  --sidebar-w: 248px;
+  --header-h: 64px;
   --content-max: 1136px;
   --page-pad-x: 40px;
 }
@@ -186,8 +186,8 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --sidebar-w: 232px;
-  --header-h: 63px;
+  --sidebar-w: 248px;
+  --header-h: 64px;
   --content-max: 1136px;
   --page-pad-x: 40px;
 }
