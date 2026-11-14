@@ -95,7 +95,11 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [localTime, setLocalTime] = useState(ANCHOR_HOUR);
   const [theme, setThemeState] = useState<Theme>(readTheme);
   const [page, setPage] = useState<PageId>(readPage);
-  const [compareIds, setCompareIds] = useState<string[]>(["haworth", "degerlache", "nobile"]);
+  const [compareIds, setCompareIds] = useState<string[]>([
+    "haworth",
+    "degerlache",
+    "nobile",
+  ]);
   const [compareEnabled, setCompareEnabled] = useState(false);
 
   useEffect(() => {
@@ -134,8 +138,8 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const site = useMemo(() => getSite(siteId), [siteId]);
-  const model = useMemo(() => buildModel(site), [site]);
-  const analysis = useMemo(() => cachedAnalysis(site), [site]);
+  const model = useMemo(() => buildModel(site, date), [site, date]);
+  const analysis = useMemo(() => cachedAnalysis(site, date), [site, date]);
   const compareSites = useMemo(() => compareIds.map(getSite), [compareIds]);
   const dateLabel = MISSION_DATES.find((d) => d.value === date)?.label ?? date;
   const sun = useMemo(() => sunAt(model, localTime), [model, localTime]);
@@ -167,10 +171,12 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     compareSites,
     compareEnabled,
     setCompareEnabled,
-    demo: true,
+    demo: false,
   };
 
-  return <MissionContext.Provider value={value}>{children}</MissionContext.Provider>;
+  return (
+    <MissionContext.Provider value={value}>{children}</MissionContext.Provider>
+  );
 }
 
 export function useMission(): MissionState {

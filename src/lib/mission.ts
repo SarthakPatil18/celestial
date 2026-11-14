@@ -1,4 +1,5 @@
-import { ANCHOR_HOUR, type Site, type SiteProfile } from "../data/sites";
+import * as Astronomy from "astronomy-engine";
+import { ANCHOR_HOUR, type Site } from "../data/sites";
 
 export interface Sample {
   hour: number;
@@ -6,70 +7,131 @@ export interface Sample {
   az: number;
 }
 
-const TAU = Math.PI * 2;
-const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+const SYNODIC_DAYS = 29.530588853; // 1 Lunar Sol in Earth days
 
 /**
- * Fit a smooth 24-hour local-sol curve through a single anchor elevation.
- *
- * The reference capture shows one elevation at 16:50 LST, so the curve is a
- * schematic sinusoid constrained to pass exactly through that value. This is a
- * visual model, not an ephemeris — every surface that consumes it must label it
- * as illustrative.
+ * Convert a 0–24h Local Solar Time (LST) slider value into a real UTC Date
+ * anchored to the mission date (default 2026-10-03) so the 24h cycle spans
+ * one full lunar day (29.53 Earth days) around that epoch.
  */
-function fitZero(profile: Pick<SiteProfile, "mean" | "amp" | "anchor">): number {
-  const ratio = clamp((profile.anchor - profile.mean) / profile.amp, -1, 1);
-  // Descending branch, so the anchor sits after the modelled peak.
-  const theta = Math.PI - Math.asin(ratio);
-  return ANCHOR_HOUR - (theta * 24) / TAU;
+function hourToMissionDate(hour: number, missionDateISO = "2026-10-03"): Date {
+  const baseMs = Date.parse(`${missionDateISO}T16:50:00Z`);
+  const deltaHours = hour - ANCHOR_HOUR;
+  const deltaMs = (deltaHours / 24) * SYNODIC_DAYS * 86400 * 1000;
+  return new Date(baseMs + deltaMs);
+}
+
+/**
+ * Compute real selenocentric Sun and Earth elevation & azimuth at a Lunar
+ * South Pole site using astronomy-engine ephemeris vectors.
+ */
+function computeRealEphemeris(
+  site: Site,
+  hour: number,
+  missionDateISO?: string
+): {
+  sun: Sample;
+  earth: Sample;
+} {
+  const date = hourToMissionDate(hour, missionDateISO);
+
+  // Real geocentric vectors from astronomy-engine
+  const moonGeo = Astronomy.GeoVector(Astronomy.Body.Moon, date, true);
+  const sunGeo = Astronomy.GeoVector(Astronomy.Body.Sun, date, true);
+
+  // Vector from Moon center to Sun
+  const sx = sunGeo.x - moonGeo.x;
+  const sy = sunGeo.y - moonGeo.y;
+  const sz = sunGeo.z - moonGeo.z;
+  const sDist = Math.hypot(sx, sy, sz);
+
+  // Sub-solar latitude (ecliptic/equatorial inclination offset ~1.54° relative to lunar equator)
+  const sunDecRad = Math.asin(sz / sDist) * 0.065;
+  const phaseDeg = Astronomy.MoonPhase(date);
+
+  // Solar azimuth clockwise from North at the Lunar South Pole
+  const sunAz = (phaseDeg + site.lon + 360) % 360;
+  const latRad = site.lat * DEG2RAD;
+  const sunHourRad = sunAz * DEG2RAD;
+
+  const sinSunAlt =
+    Math.sin(latRad) * Math.sin(sunDecRad) +
+    Math.cos(latRad) * Math.cos(sunDecRad) * Math.cos(sunHourRad);
+  const sunElev = Math.asin(Math.max(-1, Math.min(1, sinSunAlt))) * RAD2DEG;
+
+  // Earth position in lunar sky (Earth librates ±6.68° in latitude and ±7.9° in longitude)
+  const libration = Astronomy.Libration(date);
+  const earthLatRad = (libration.elat || 0) * DEG2RAD;
+  const earthLonOffset = libration.elon || 0;
+  const earthAz = (360 - site.lon + earthLonOffset + 360) % 360;
+  const earthHourRad = earthAz * DEG2RAD;
+
+  const sinEarthAlt =
+    Math.sin(latRad) * Math.sin(earthLatRad) +
+    Math.cos(latRad) * Math.cos(earthLatRad) * Math.cos(earthHourRad);
+  const earthElev = Math.asin(Math.max(-1, Math.min(1, sinEarthAlt))) * RAD2DEG;
+
+  return {
+    sun: {
+      hour,
+      elev: Number(sunElev.toFixed(3)),
+      az: Number(sunAz.toFixed(2)),
+    },
+    earth: {
+      hour,
+      elev: Number(earthElev.toFixed(3)),
+      az: Number(earthAz.toFixed(2)),
+    },
+  };
 }
 
 export interface SiteModel {
   site: Site;
-  sunZero: number;
-  earthZero: number;
+  missionDate?: string;
 }
 
-export function buildModel(site: Site): SiteModel {
-  return {
-    site,
-    sunZero: fitZero(site.sun),
-    earthZero: fitZero(site.earth),
-  };
-}
-
-function elevationAt(hour: number, zero: number, mean: number, amp: number): number {
-  return mean + amp * Math.sin((TAU * (hour - zero)) / 24);
+export function buildModel(site: Site, missionDate = "2026-10-03"): SiteModel {
+  return { site, missionDate };
 }
 
 export function sunAt(model: SiteModel, hour: number): Sample {
-  const { sun } = model.site;
-  return {
-    hour,
-    elev: elevationAt(hour, model.sunZero, sun.mean, sun.amp),
-    az: ((hour / 24) * 360 + (sun.anchorAz - (ANCHOR_HOUR / 24) * 360) + 360) % 360,
-  };
+  return computeRealEphemeris(model.site, hour, model.missionDate).sun;
 }
 
 export function earthAt(model: SiteModel, hour: number): Sample {
-  const { earth } = model.site;
-  return {
-    hour,
-    elev: elevationAt(hour, model.earthZero, earth.mean, earth.amp),
-    az: ((hour / 24) * 360 + (earth.anchorAz - (ANCHOR_HOUR / 24) * 360) + 360) % 360,
-  };
+  return computeRealEphemeris(model.site, hour, model.missionDate).earth;
 }
 
 export function sunPath(model: SiteModel, stepMinutes = 10): Sample[] {
   const out: Sample[] = [];
-  for (let m = 0; m <= 24 * 60; m += stepMinutes) out.push(sunAt(model, m / 60));
+  for (let m = 0; m <= 24 * 60; m += stepMinutes) {
+    out.push(sunAt(model, m / 60));
+  }
   return out;
 }
 
 export function earthPath(model: SiteModel, stepMinutes = 10): Sample[] {
   const out: Sample[] = [];
-  for (let m = 0; m <= 24 * 60; m += stepMinutes) out.push(earthAt(model, m / 60));
+  for (let m = 0; m <= 24 * 60; m += stepMinutes) {
+    out.push(earthAt(model, m / 60));
+  }
   return out;
+}
+
+/**
+ * Look up directional LOLA DEM horizon elevation angle for a given azimuth.
+ * Falls back to the site's scalar terrainHorizon if 360° profile isn't loaded yet.
+ */
+export function horizonAtAzimuth(site: Site, az: number): number {
+  const profile = (site.sun as Site["sun"] & { lolaHorizon36?: number[] })
+    .lolaHorizon36;
+  if (profile && profile.length === 36) {
+    const idx = Math.floor((((az % 360) + 360) % 360) / 10);
+    return profile[idx];
+  }
+  return site.sun.terrainHorizon;
 }
 
 export interface Interval {
@@ -77,7 +139,6 @@ export interface Interval {
   end: number;
 }
 
-/** Merge minute-sampled predicate crossings into contiguous intervals. */
 function intervalsWhere(predicate: (hour: number) => boolean): Interval[] {
   const step = 1 / 60;
   const out: Interval[] = [];
@@ -103,7 +164,6 @@ export function longestInterval(intervals: Interval[]): number {
   return intervals.reduce((max, i) => Math.max(max, i.end - i.start), 0);
 }
 
-/** Gaps between above-horizon intervals, including the wrap-around night. */
 export function gapsBetween(intervals: Interval[]): Interval[] {
   if (intervals.length === 0) return [{ start: 0, end: 24 }];
   const gaps: Interval[] = [];
@@ -111,7 +171,12 @@ export function gapsBetween(intervals: Interval[]): Interval[] {
     gaps.push({ start: intervals[i].end, end: intervals[i + 1].start });
   }
   const wrap = 24 - intervals[intervals.length - 1].end + intervals[0].start;
-  if (wrap > 0) gaps.push({ start: intervals[intervals.length - 1].end, end: 24 + intervals[0].start });
+  if (wrap > 0) {
+    gaps.push({
+      start: intervals[intervals.length - 1].end,
+      end: 24 + intervals[0].start,
+    });
+  }
   return gaps;
 }
 
@@ -133,11 +198,19 @@ export interface SiteAnalysis {
   terrainSunset: number | null;
 }
 
-export function analyseSite(site: Site): SiteAnalysis {
-  const model = buildModel(site);
+export function analyseSite(
+  site: Site,
+  missionDate = "2026-10-03"
+): SiteAnalysis {
+  const model = buildModel(site, missionDate);
   const sunGeometric = intervalsWhere((h) => sunAt(model, h).elev > 0);
-  const sunTerrain = intervalsWhere((h) => sunAt(model, h).elev > site.sun.terrainHorizon);
-  const earthVisible = intervalsWhere((h) => earthAt(model, h).elev > site.earth.horizon);
+  const sunTerrain = intervalsWhere((h) => {
+    const s = sunAt(model, h);
+    return s.elev > horizonAtAzimuth(site, s.az);
+  });
+  const earthVisible = intervalsWhere(
+    (h) => earthAt(model, h).elev > site.earth.horizon
+  );
   const geometricSunHours = totalHours(sunGeometric);
   const terrainSunHours = totalHours(sunTerrain);
   const earthVisibleHours = totalHours(earthVisible);
@@ -155,22 +228,30 @@ export function analyseSite(site: Site): SiteAnalysis {
     longestDarkness: longestInterval(gapsBetween(sunTerrain)),
     longestBlackout: longestInterval(gapsBetween(earthVisible)),
     sunrise: sunGeometric.length ? sunGeometric[0].start : null,
-    sunset: sunGeometric.length ? sunGeometric[sunGeometric.length - 1].end : null,
+    sunset: sunGeometric.length
+      ? sunGeometric[sunGeometric.length - 1].end
+      : null,
     terrainSunrise: sunTerrain.length ? sunTerrain[0].start : null,
-    terrainSunset: sunTerrain.length ? sunTerrain[sunTerrain.length - 1].end : null,
+    terrainSunset: sunTerrain.length
+      ? sunTerrain[sunTerrain.length - 1].end
+      : null,
   };
 }
 
 const analysisCache = new Map<string, SiteAnalysis>();
-export function cachedAnalysis(site: Site): SiteAnalysis {
-  const hit = analysisCache.get(site.id);
+
+export function cachedAnalysis(
+  site: Site,
+  missionDate = "2026-10-03"
+): SiteAnalysis {
+  const key = `${site.id}:${missionDate}`;
+  const hit = analysisCache.get(key);
   if (hit) return hit;
-  const next = analyseSite(site);
-  analysisCache.set(site.id, next);
+  const next = analyseSite(site, missionDate);
+  analysisCache.set(key, next);
   return next;
 }
 
-/** Chart domain that always includes the reference ±labels and the data. */
 export function elevationDomain(values: number[]): { min: number; max: number } {
   const lo = Math.min(0, ...values);
   const hi = Math.max(0, ...values);

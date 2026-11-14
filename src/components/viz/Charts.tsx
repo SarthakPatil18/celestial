@@ -97,6 +97,7 @@ export interface ChartSeries {
 export function PolarSolarProfile({
   series,
   localTime,
+  date = "2026-10-03",
   onScrub,
   height: _height = 300,
   showField = true,
@@ -104,6 +105,7 @@ export function PolarSolarProfile({
 }: {
   series: ChartSeries[];
   localTime: number;
+  date?: string;
   onScrub?: (hour: number) => void;
   height?: number;
   showField?: boolean;
@@ -112,10 +114,10 @@ export function PolarSolarProfile({
   const paths = useMemo(
     () =>
       series.map((entry) => {
-        const model = buildModel(entry.site);
+        const model = buildModel(entry.site, date);
         return { ...entry, model, samples: sunPath(model, 5) };
       }),
-    [series],
+    [series, date],
   );
 
   const domain = useMemo(() => {
@@ -124,7 +126,8 @@ export function PolarSolarProfile({
   }, [paths]);
 
   const primary = paths[0];
-  const primarySample = primary.samples[Math.min(primary.samples.length - 1, Math.round(localTime * 12))];
+  const sampleIdx = Math.min(primary.samples.length - 1, Math.round(localTime * 12));
+  const primarySample = primary.samples[sampleIdx];
   const handle = useScrub(onScrub);
 
   return (
@@ -160,7 +163,7 @@ export function PolarSolarProfile({
 
       {primary &&
         (() => {
-          const analysis = cachedAnalysis(primary.site);
+          const analysis = cachedAnalysis(primary.site, date);
           return analysis.sunTerrain.map((interval) => (
             <rect
               key={`${interval.start}-${interval.end}`}
@@ -200,8 +203,8 @@ export function PolarSolarProfile({
           className="chart-marker__line"
         />
         {paths.map((entry) => {
-          const h = localTime;
-          const value = sunPath(entry.model, 5)[Math.min(47, Math.round(h * 2))]?.elev ?? 0;
+          const idx = Math.min(entry.samples.length - 1, Math.round(localTime * 12));
+          const value = entry.samples[idx]?.elev ?? 0;
           return (
             <circle
               key={entry.site.id}
@@ -242,15 +245,17 @@ function linePath(samples: Sample[], domain: { min: number; max: number }) {
 export function EarthElevationChart({
   site,
   localTime,
+  date = "2026-10-03",
   onScrub,
   height: _height = 240,
 }: {
   site: Site;
   localTime: number;
+  date?: string;
   onScrub?: (hour: number) => void;
   height?: number;
 }) {
-  const model = useMemo(() => buildModel(site), [site]);
+  const model = useMemo(() => buildModel(site, date), [site, date]);
   const samples = useMemo(() => earthPath(model, 5), [model]);
   const domain = useMemo(() => elevationDomain(samples.map((s) => s.elev)), [samples]);
   const handle = useScrub(onScrub);
@@ -371,8 +376,16 @@ export function VisibilityTimeline({
   );
 }
 
-export function SunAngleSpark({ site, localTime }: { site: Site; localTime: number }) {
-  const model = useMemo(() => buildModel(site), [site]);
+export function SunAngleSpark({
+  site,
+  localTime,
+  date = "2026-10-03",
+}: {
+  site: Site;
+  localTime: number;
+  date?: string;
+}) {
+  const model = useMemo(() => buildModel(site, date), [site, date]);
   const samples = useMemo(() => sunPath(model, 15), [model]);
   const domain = { min: -12, max: 12 };
   const width = 160;

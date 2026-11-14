@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { PAGES, useMission } from "../../context/MissionContext";
 import { Icon, LogoMark } from "../ui/Icon";
+import { fetchLiveDsn, type DsnSnapshot } from "../../lib/dsn";
 
-const NAV_ICONS = {
+const PAGE_ICONS = {
   overview: "overview",
   "landing-sites": "pin",
   "horizon-simulator": "horizon",
@@ -11,78 +13,65 @@ const NAV_ICONS = {
 } as const;
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const { page, navigate, durationDays } = useMission();
+  const { page, navigate } = useMission();
+  const [dsn, setDsn] = useState<DsnSnapshot | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const poll = () =>
+      fetchLiveDsn().then((snap) => {
+        if (active) setDsn(snap);
+      });
+    poll();
+    const id = window.setInterval(poll, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, []);
+
+  const primaryDish =
+    dsn?.dishes.find((d) => d.targets.some((t) => t.isLunar)) ?? dsn?.dishes[0];
 
   return (
     <div className="sidebar__inner">
-      <a
-        className="brand"
-        href="#/overview"
-        onClick={(event) => {
-          event.preventDefault();
-          navigate("overview");
-          onNavigate?.();
-        }}
-      >
+      <div className="brand">
         <span className="brand__mark">
-          <LogoMark size={34} />
+          <LogoMark size={30} />
         </span>
-        <span className="brand__text">
+        <div className="brand__text">
           <span className="brand__name">
-            LUNAR <span className="brand__slash">/</span> HORIZON
+            LUNAR<span className="brand__slash">/</span>HORIZON
           </span>
-          <span className="brand__sub">MISSION INTELLIGENCE</span>
-        </span>
-      </a>
-
-      <div className="telemetry">
-        <div className="telemetry__head">
-          <span className="telemetry__title">MISSION TELEMETRY</span>
-          <span className="status status--live">
-            <i className="status__dot" aria-hidden="true" />
-            NOMINAL
-          </span>
-        </div>
-        <div className="telemetry__row">
-          <span className="telemetry__label">FLIGHT DAY</span>
-          <span className="telemetry__value">SIM • 04</span>
-        </div>
-        <div className="telemetry__meter" aria-hidden="true">
-          <span style={{ width: `${Math.min(100, (4 / Math.max(durationDays, 4)) * 100)}%` }} />
-        </div>
-        <div className="telemetry__foot">
-          <span>DURATION</span>
-          <span>{durationDays} DAYS</span>
+          <span className="brand__sub">SOUTH POLE · EPHEMERIS &amp; DEM</span>
         </div>
       </div>
 
-      <nav className="nav" aria-label="Primary">
-        <p className="nav__label">MISSION SYSTEMS</p>
-        <ul className="nav__list">
+      <nav className="nav">
+        <span className="nav__label">MISSION SYSTEMS</span>
+        <div className="nav__list">
           {PAGES.map((item) => {
-            const active = item.id === page;
+            const active = page === item.id;
             return (
-              <li key={item.id}>
-                <a
-                  href={`#/${item.id}`}
-                  className={`nav__item ${active ? "is-active" : ""}`}
-                  aria-current={active ? "page" : undefined}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    navigate(item.id);
-                    onNavigate?.();
-                  }}
-                >
-                  <span className="nav__icon">
-                    <Icon name={NAV_ICONS[item.id]} size={15} />
-                  </span>
-                  <span className="nav__text">{item.label}</span>
-                  <span className="nav__index">{item.index}</span>
-                </a>
-              </li>
+              <button
+                key={item.id}
+                type="button"
+                className={`nav__item ${active ? "is-active" : ""}`}
+                onClick={() => {
+                  navigate(item.id);
+                  onNavigate?.();
+                }}
+                aria-current={active ? "page" : undefined}
+              >
+                <span className="nav__icon">
+                  <Icon name={PAGE_ICONS[item.id]} size={15} />
+                </span>
+                <span className="nav__text">{item.label}</span>
+                <span className="nav__index">{item.index}</span>
+              </button>
             );
           })}
-        </ul>
+        </div>
       </nav>
 
       <div className="sidebar__bottom">
@@ -92,10 +81,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             <span>DEEP SPACE LINK</span>
           </div>
           <div className="dsn__row">
-            <span className="dsn__target">DSN • Goldstone</span>
+            <span className="dsn__target">
+              {primaryDish
+                ? `${primaryDish.name} • ${primaryDish.complex}`
+                : "DSN • Goldstone"}
+            </span>
             <span className="status status--live">
               <i className="status__dot" aria-hidden="true" />
-              READY
+              {dsn?.source === "live-nasa-dsn" ? "LIVE" : "READY"}
             </span>
           </div>
           <div className="dsn__bars" aria-hidden="true">
@@ -103,16 +96,17 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               <span key={i} style={{ height: `${h}%` }} />
             ))}
           </div>
-          <p className="dsn__note">Concept interface · no operational link</p>
+          <p className="dsn__note">
+            {primaryDish?.targets[0]
+              ? `Tracking ${primaryDish.targets[0].name} · El ${primaryDish.elevationDeg.toFixed(1)}°`
+              : "NASA JPL DSN Now feed"}
+          </p>
         </div>
 
         <div className="sidebar__foot">
-          <span>HORIZON SIM V.01</span>
-          <span>EST 2026</span>
+          <span>JPL DE440 · LOLA DEM</span>
+          <span>ARTEMIS III</span>
         </div>
-        <p className="sidebar__disclaimer">
-          Illustrative concept. Not for flight navigation or operational planning.
-        </p>
       </div>
     </div>
   );

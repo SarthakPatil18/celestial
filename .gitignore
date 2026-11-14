@@ -1,9 +1,11 @@
+
 # Dependencies
 node_modules/
 
 # Production build
 dist/
 dist-ssr/
+build/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -26,8 +28,14 @@ Thumbs.db
 
 # Environment variables
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+
+# API keys and credentials
+*.pem
+*.key
+credentials.json
+service-account.json
 
 # Compiled binaries
 .refs/ocr

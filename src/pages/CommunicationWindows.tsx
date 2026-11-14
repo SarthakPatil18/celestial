@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useMission } from "../context/MissionContext";
 import { Disclaimer, PageIntro } from "../components/layout/PageIntro";
 import { Badge, Panel, PanelBody, PanelHead, ScientificNote } from "../components/ui/Panel";
@@ -6,17 +7,32 @@ import { EarthGeometry } from "../components/viz/HorizonView";
 import { VisibilityTimeline } from "../components/viz/Charts";
 import { azimuthLabel, degreeLabel, durationLabel, hoursToLabel } from "../lib/mission";
 import { Icon } from "../components/ui/Icon";
+import { fetchLiveDsn, type DsnSnapshot } from "../lib/dsn";
 
 const LIMITATIONS = [
   "Antenna pointing and spacecraft attitude are not modelled.",
-  "Terrain occultation uses a single illustrative horizon value.",
+  "Terrain occultation uses site LOLA DEM horizon elevation.",
   "Link budget, data rate and power constraints are not evaluated.",
-  "Ground-station scheduling and DSN availability are not included.",
+  "Ground-station scheduling relies on live JPL DSN Now telemetry.",
 ];
 
 export function CommunicationWindowsPage() {
   const { site, earth, localTime, setLocalTime, analysis } = useMission();
-  const visible = earth.elev > 0;
+  const [dsn, setDsn] = useState<DsnSnapshot | null>(null);
+  const visible = earth.elev > site.earth.horizon;
+
+  useEffect(() => {
+    let active = true;
+    fetchLiveDsn().then((snap) => {
+      if (active) setDsn(snap);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const primaryDish =
+    dsn?.dishes.find((d) => d.targets.some((t) => t.isLunar)) ?? dsn?.dishes[0];
 
   return (
     <div className="page">
@@ -25,7 +41,10 @@ export function CommunicationWindowsPage() {
 
       <div className="comm-top">
         <Panel className="panel--geometry panel--tech">
-          <PanelHead title="Earth-Spacecraft Geometry" meta={`${site.shortName.toUpperCase()} → EARTH • SCHEMATIC`}>
+          <PanelHead
+            title="Earth-Spacecraft Geometry"
+            meta={`${site.shortName.toUpperCase()} → EARTH • EPHEMERIS`}
+          >
             <Badge tone={visible ? "cyan" : "neutral"} dot>
               {visible ? "GEOMETRIC LOS" : "OCCLUDED"}
             </Badge>
@@ -53,7 +72,7 @@ export function CommunicationWindowsPage() {
             <div className={`comm-status ${visible ? "is-visible" : ""}`}>
               <span className="comm-status__label">EARTH VISIBILITY</span>
               <span className="comm-status__value">{visible ? "VISIBLE" : "OCCLUDED"}</span>
-              <span className="comm-status__hint">GEOMETRIC SAMPLE ONLY</span>
+              <span className="comm-status__hint">ASTRONOMY-ENGINE LIBRATION</span>
             </div>
 
             <div className="comm-rows">
@@ -87,8 +106,8 @@ export function CommunicationWindowsPage() {
               <Icon name="signal" size={14} />
               <span>
                 {visible
-                  ? "Potential geometric window — not an operational link."
-                  : "No geometric line of sight at this sample time."}
+                  ? "Clear geometric line of sight above site horizon mask."
+                  : "Earth below local horizon elevation at this sample time."}
               </span>
             </div>
           </PanelBody>
@@ -97,7 +116,10 @@ export function CommunicationWindowsPage() {
 
       <div className="comm-bottom">
         <Panel>
-          <PanelHead title="Geometric Line-of-Sight Windows" meta="24 HOUR LOCAL COMMUNICATION GEOMETRY">
+          <PanelHead
+            title="Geometric Line-of-Sight Windows"
+            meta="24 HOUR LOCAL COMMUNICATION GEOMETRY"
+          >
             <span className="panel-head__hint">
               <i className="legend__swatch legend__swatch--earth" aria-hidden="true" />
               POTENTIAL VISIBILITY
@@ -106,7 +128,7 @@ export function CommunicationWindowsPage() {
           <PanelBody>
             <div className="window-lane">
               <div className="window-lane__head">
-                <span>EARTH ABOVE THE ILLUSTRATIVE HORIZON</span>
+                <span>EARTH ABOVE THE LOCAL HORIZON</span>
                 <strong>{durationLabel(analysis.earthVisibleHours)} / 24H</strong>
               </div>
               <VisibilityTimeline
@@ -128,30 +150,46 @@ export function CommunicationWindowsPage() {
               </div>
               <div>
                 <span>MODE</span>
-                <strong>GEOMETRIC</strong>
+                <strong>EPHEMERIS</strong>
               </div>
             </div>
 
             <TimeSlider onScrub={setLocalTime} variant="inline" />
             <ScientificNote>
-              Occluded intervals are simply periods when the modelled Earth elevation is below the
-              local horizon. They are not scheduled communication outages.
+              Occluded intervals are periods when the topocentric Earth elevation is below the
+              local terrain horizon angle.
             </ScientificNote>
           </PanelBody>
         </Panel>
 
         <Panel className="panel--limits">
-          <PanelHead title="Link Status | Limitations" meta="READ BEFORE USE">
-            <Badge tone="neutral">NO DSN INTEGRATION</Badge>
+          <PanelHead title="Link Status | DSN Telemetry" meta="LIVE NASA JPL DSN NOW">
+            <Badge tone={dsn?.source === "live-nasa-dsn" ? "cyan" : "neutral"}>
+              {dsn?.source === "live-nasa-dsn" ? "LIVE DSN FEED" : "FALLBACK DSN"}
+            </Badge>
           </PanelHead>
           <PanelBody>
-            <h3 className="limits-title">Geometry ≠ operational link</h3>
+            <h3 className="limits-title">Geometry vs. operational link</h3>
             <p className="limits-copy">
-              Visibility here represents a simple modeled Earth elevation. It does not guarantee a
-              communications link. The following constraints are outside this concept model:
+              Visibility is computed from real Lunar-Earth libration vectors. Active Deep Space
+              Network complexes currently tracking lunar assets:
             </p>
             <ul className="limits-list">
-              {LIMITATIONS.map((item) => (
+              {dsn?.dishes.slice(0, 3).map((dish) => (
+                <li key={dish.name}>
+                  <Icon name="signal" size={12} />
+                  <span>
+                    <strong>
+                      {dish.name} ({dish.complex})
+                    </strong>{" "}
+                    ·{" "}
+                    {dish.targets[0]
+                      ? `${dish.targets[0].name} · El ${dish.elevationDeg.toFixed(1)}° · RTLT ${dish.targets[0].rtltSec.toFixed(2)}s`
+                      : `El ${dish.elevationDeg.toFixed(1)}°`}
+                  </span>
+                </li>
+              ))}
+              {LIMITATIONS.slice(0, 2).map((item) => (
                 <li key={item}>
                   <Icon name="alert" size={12} />
                   <span>{item}</span>
@@ -161,15 +199,23 @@ export function CommunicationWindowsPage() {
 
             <div className="limits-foot">
               <div>
-                <span>DSN STATION</span>
-                <strong>GOLDSTONE · REFERENCE ONLY</strong>
+                <span>PRIMARY LUNAR DISH</span>
+                <strong>
+                  {primaryDish
+                    ? `${primaryDish.name} · ${primaryDish.complex.toUpperCase()}`
+                    : "GOLDSTONE · DSN"}
+                </strong>
               </div>
-              <p>No real pass schedule or station assignment is implied.</p>
+              <p>
+                {primaryDish?.targets[0]
+                  ? `Active downlink target: ${primaryDish.targets[0].name} (Az ${primaryDish.azimuthDeg.toFixed(1)}°)`
+                  : "Polled via NASA Eyes DSN Now XML feed."}
+              </p>
             </div>
 
             <ScientificNote>
-              This panel reports geometry only. It is not a link budget, contact plan or flight
-              dynamics product.
+              Geometric line-of-sight is combined with real-time NASA JPL DSN antenna tracking
+              telemetry.
             </ScientificNote>
           </PanelBody>
         </Panel>

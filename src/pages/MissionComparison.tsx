@@ -42,6 +42,7 @@ export function MissionComparisonPage() {
     localTime,
     setLocalTime,
     durationDays,
+    date,
     dateLabel,
   } = useMission();
 
@@ -50,12 +51,12 @@ export function MissionComparisonPage() {
       compareSites
         .slice(0, compareEnabled ? 3 : 2)
         .map((site, index) => {
-          const model = buildModel(site);
+          const model = buildModel(site, date);
           const sun = sunAt(model, localTime);
           const earth = earthAt(model, localTime);
           return {
             site,
-            analysis: cachedAnalysis(site),
+            analysis: cachedAnalysis(site, date),
             sunElev: sun.elev,
             sunAz: sun.az,
             earthElev: earth.elev,
@@ -64,7 +65,7 @@ export function MissionComparisonPage() {
             letter: ["A", "B", "C"][index],
           };
         }),
-    [compareSites, compareEnabled, localTime],
+    [compareSites, compareEnabled, localTime, date],
   );
 
   const highest = useMemo(() => {
@@ -265,6 +266,7 @@ export function MissionComparisonPage() {
                 dashed: entry.tone === "field",
               }))}
               localTime={localTime}
+              date={date}
               onScrub={setLocalTime}
               height={280}
               showField={false}
@@ -293,8 +295,8 @@ export function MissionComparisonPage() {
               </div>
             ))}
             <ScientificNote>
-              Timelines are generated from the same schematic elevation model as the individual
-              pages. They are illustrative geometry, not contact plans.
+              Timelines are generated from the same astronomy-engine ephemeris model as the
+              individual pages. They are illustrative geometry, not contact plans.
             </ScientificNote>
           </PanelBody>
         </Panel>
@@ -332,7 +334,7 @@ export function MissionComparisonPage() {
             <p className="tradeoffs-copy">
               The values above describe different strengths. Selecting a site requires mission
               weights for power, thermal survival, communications and surface operations — none of
-              which are defined in this concept interface.
+              which are defined in this interface.
             </p>
             <ul className="tradeoffs-list">
               {highest ? (
@@ -364,7 +366,7 @@ export function MissionComparisonPage() {
                 <strong>
                   {entries.every((entry) => entry.site.dataQuality === "Sample")
                     ? "All samples are illustrative"
-                    : "Mixed sample quality — no validated dataset"}
+                    : "Artemis III / LOLA DEM candidate profiles"}
                 </strong>
               </li>
             </ul>

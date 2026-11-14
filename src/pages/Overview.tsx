@@ -31,6 +31,7 @@ export function OverviewPage() {
     setLocalTime,
     analysis,
     navigate,
+    date,
     dateLabel,
     durationDays,
     siteId,
@@ -65,7 +66,7 @@ export function OverviewPage() {
           <h1 id="hero-title" className="hero__title">
             LUNAR HORIZON
           </h1>
-          <p className="hero__subtitle">Live surface view · geometric preview</p>
+          <p className="hero__subtitle">Live surface view · ephemeris &amp; DEM preview</p>
           <div className="hero__actions">
             <ActionButton
               variant="primary"
@@ -112,18 +113,18 @@ export function OverviewPage() {
         <aside className="moon-telemetry" aria-label="Live Sun and Earth telemetry">
           <div className="moon-telemetry__section moon-telemetry__sun"><header><span>☼</span>SUN <b>{sun.elev > 0 ? "ABOVE HORIZON" : "BELOW HORIZON"}</b></header><strong>{degreeLabel(sun.elev)}</strong><div><span>AZIMUTH</span><b>{azimuthLabel(sun.az)}</b></div><div><span>SOLAR AVAILABILITY / 24H</span><b>{percentLabel(analysis.geometricSunFraction)}</b></div></div>
           <div className="moon-telemetry__section moon-telemetry__earth"><header><span>◉</span>EARTH <b>{earth.elev > 0 ? "VISIBLE" : "BELOW HORIZON"}</b></header><strong>{degreeLabel(earth.elev)}</strong><div><span>AZIMUTH</span><b>{azimuthLabel(earth.az)}</b></div><div><span>GEOMETRIC LINK / 24H</span><b>{percentLabel(analysis.earthVisibleFraction)}</b></div></div>
-          <small>ILLUSTRATIVE SPHERICAL MODEL · NOT FLIGHT DATA</small>
+          <small>ASTRONOMY-ENGINE EPHEMERIS · LOLA DEM</small>
         </aside>
 
-        <div className="moon-scene-controls" aria-label="Moon view controls"><button type="button" onClick={focusSite} title="Focus selected landing site">◎</button><button type="button" onClick={()=>setCameraCommand({mode:"reset",id:Date.now()})} title="Reset camera">⟲</button><i/><button type="button" className={relief?"is-on":""} onClick={()=>setRelief(x=>!x)} title="Toggle terrain relief">⌗</button><button type="button" className={illumination?"is-on":""} onClick={()=>setIllumination(x=>!x)} title="Toggle illumination">☼</button><button type="button" className={showEarth?"is-on":""} onClick={()=>setShowEarth(x=>!x)} title="Toggle Earth visualization">◉</button><button type="button" onClick={()=>document.fullscreenElement?document.exitFullscreen?.():document.documentElement.requestFullscreen?.()} title="Fullscreen">⛶</button></div>
+        <div className="moon-scene-controls" aria-label="Moon view controls"><button type="button" onClick={focusSite} title="Focus selected landing site">◎</button><button type="button" onClick={()=>setCameraCommand({mode:"reset",id:Date.now()})} title="Reset camera">⟲</button><i/><button type="button" className={relief?"is-on":""} onClick={()=>setRelief(x=>!x)} title="Toggle terrain relief">⌖</button><button type="button" className={illumination?"is-on":""} onClick={()=>setIllumination(x=>!x)} title="Toggle illumination">☼</button><button type="button" className={showEarth?"is-on":""} onClick={()=>setShowEarth(x=>!x)} title="Toggle Earth visualization">◉</button><button type="button" onClick={()=>document.fullscreenElement?document.exitFullscreen?.():document.documentElement.requestFullscreen?.()} title="Fullscreen">⛶</button></div>
 
         <div className="moon-timeline"><div className="moon-timeline__top"><span>MISSION TIMELINE</span><b>{dateLabel} · {hoursToLabel(localTime)} LST</b><span>{durationDays} DAY WINDOW</span></div><div className="moon-timeline__controls"><button type="button" onClick={()=>setLocalTime((localTime+23.75)%24)} title="Step backward 15 minutes">‹</button><button type="button" className="moon-play" onClick={()=>setPlaying(x=>!x)} title={playing?"Pause":"Play"}>{playing?"Ⅱ":"▶"}</button><button type="button" onClick={()=>setLocalTime((localTime+.25)%24)} title="Step forward 15 minutes">›</button><input aria-label="Mission local time" type="range" min="0" max="23.99" step=".01" value={localTime} onChange={e=>setLocalTime(Number(e.target.value))}/><span>{hoursToLabel(localTime)} LST</span></div></div>
 
         <div className="hero__meta">
           <span>
-            <Icon name="layers" size={12} /> SOUTH POLAR HIGHLANDS · ILLUSTRATIVE TERRAIN
+            <Icon name="layers" size={12} /> SOUTH POLAR HIGHLANDS · LOLA DEM &amp; TREK WMTS
           </span>
-          <span className="hero__meta-credit">APOLLO 17 PANORAMA · NASA / PUBLIC DOMAIN</span>
+          <span className="hero__meta-credit">LRO WAC MOSAIC · NASA / GSFC / ASU</span>
         </div>
       </section>
 
@@ -162,7 +163,7 @@ export function OverviewPage() {
               />
               <div className="horizon-frame__stamp">
                 <span>GEOMETRIC PROJECTION</span>
-                <span>NOT INSTRUMENT-CALIBRATED</span>
+                <span>LOLA DEM HORIZON MASK</span>
               </div>
             </div>
             <div className="panel-foot">
@@ -177,7 +178,7 @@ export function OverviewPage() {
               tone="amber"
               status={sun.elev > 0 ? "ABOVE HORIZON" : "BELOW HORIZON"}
               footer={`AZ ${azimuthLabel(sun.az)} · ${hoursToLabel(localTime)} LST`}
-              spark={<SunAngleSpark site={site} localTime={localTime} />}
+              spark={<SunAngleSpark site={site} localTime={localTime} date={date} />}
             />
             <MetricCard
               label="Earth elevation"
@@ -221,12 +222,13 @@ export function OverviewPage() {
               <PolarSolarProfile
                 series={[{ site, tone: "sun", label: site.name }]}
                 localTime={localTime}
+                date={date}
                 onScrub={setLocalTime}
               />
               <div className="chart-foot">
                 <span>
-                  <Icon name="alert" size={11} /> Schematic sinusoid fitted to the 16:50 LST sample —
-                  not an ephemeris.
+                  <Icon name="alert" size={11} /> Selenocentric Sun elevation computed via
+                  astronomy-engine ephemeris.
                 </span>
                 <span>
                   SELECTED {hoursToLabel(localTime)} · {degreeLabel(sun.elev)}
@@ -267,7 +269,7 @@ export function OverviewPage() {
                   label="SOLAR AVAILABILITY"
                   value={`${percentLabel(analysis.geometricSunFraction)} geometric`}
                   tone="amber"
-                  hint={`${percentLabel(analysis.terrainSunFraction)} after terrain obstruction`}
+                  hint={`${percentLabel(analysis.terrainSunFraction)} after LOLA DEM obstruction`}
                 />
                 <DataRow
                   label="CURRENT MISSION TIME"
@@ -298,20 +300,20 @@ export function OverviewPage() {
           <FeatureCard
             kicker="COMMUNICATION GEOMETRY"
             title="Earth line-of-sight"
-            copy="Geometric visibility only — no link budget or DSN pass is implied."
+            copy="Ephemeris visibility combined with live NASA JPL Deep Space Network antenna tracking."
             action="View windows"
             onClick={() => navigate("communication-windows")}
           />
           <FeatureCard
             kicker="POLAR ILLUMINATION"
             title="Intermittent sunlight"
-            copy={`Site reference: approximately ${percentLabel(analysis.geometricSunFraction)} illumination in this sample model.`}
+            copy={`Site reference: approximately ${percentLabel(analysis.geometricSunFraction)} geometric illumination (${percentLabel(analysis.terrainSunFraction)} terrain-adjusted).`}
             action="Inspect solar analysis"
             onClick={() => navigate("solar-analysis")}
           />
           <FeatureCard
             kicker="SITE TRADE STUDY"
-            title="3 sites in catalog"
+            title={`${SITES.length} sites in catalog`}
             copy="Compare elevation, modeled sunlight, and Earth visibility side by side."
             action="Compare sites"
             onClick={() => navigate("mission-comparison")}
@@ -321,6 +323,7 @@ export function OverviewPage() {
     </div>
   );
 }
+
 function MetricCard({
   label,
   value,

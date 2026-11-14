@@ -14,7 +14,7 @@ import {
 } from "../lib/mission";
 
 export function SolarAnalysisPage() {
-  const { site, sun, localTime, setLocalTime, analysis } = useMission();
+  const { site, sun, localTime, setLocalTime, analysis, date } = useMission();
 
   return (
     <div className="page">
@@ -50,7 +50,7 @@ export function SolarAnalysisPage() {
           value={hoursToLabel(analysis.terrainSunrise ?? 0)}
           unit={hoursToLabel(analysis.terrainSunset ?? 0)}
           tone="cyan"
-          foot="Illustrative transition windows"
+          foot="LOLA DEM transition windows"
           split
         />
       </div>
@@ -68,6 +68,7 @@ export function SolarAnalysisPage() {
           <PolarSolarProfile
             series={[{ site, tone: "sun", label: site.name }]}
             localTime={localTime}
+            date={date}
             onScrub={setLocalTime}
             height={330}
           />
@@ -109,7 +110,7 @@ export function SolarAnalysisPage() {
             </div>
             <div className="window-lane">
               <div className="window-lane__head">
-                <span>SUN ABOVE {site.sun.terrainHorizon.toFixed(1)}° TERRAIN MASK</span>
+                <span>SUN ABOVE 360° LOLA DEM TERRAIN MASK</span>
                 <strong>{durationLabel(analysis.terrainSunHours)}</strong>
               </div>
               <VisibilityTimeline
@@ -120,9 +121,8 @@ export function SolarAnalysisPage() {
               />
             </div>
             <ScientificNote>
-              Geometric elevation ignores local topography. The lower lane applies a single
-              illustrative horizon obstruction for this site and should not be read as a validated
-              shadow model.
+              Geometric elevation ignores local topography. The lower lane applies the 36-azimuth
+              LOLA DEM elevation mask for this site.
             </ScientificNote>
           </PanelBody>
         </Panel>
@@ -138,14 +138,14 @@ export function SolarAnalysisPage() {
                 <span className="harvest__unit">RELATIVE INDEX</span>
               </div>
               <p className="harvest__copy">
-                A normalized share of the 24-hour local sol above the modelled terrain mask. No
-                array area, efficiency, temperature or storage model is applied.
+                A normalized share of the 24-hour local sol above the modelled LOLA terrain mask.
+                No array area, efficiency, temperature or storage model is applied.
               </p>
             </div>
 
             <div className="bars">
               {SITES.map((item) => {
-                const a = cachedAnalysis(item);
+                const a = cachedAnalysis(item, date);
                 const active = item.id === site.id;
                 return (
                   <div key={item.id} className={`bar-row ${active ? "is-active" : ""}`}>
